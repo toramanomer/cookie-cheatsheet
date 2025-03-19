@@ -17,12 +17,12 @@ Cookies can be either session or permanent cookies:
 
 | Cookie Attribute | Key Takeaways                                                                                                                                                                                     | If invalid                                 |
 | ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
-| Expires          | Makes the cookie a permanent cookie<br><br>Calculated with respect to Date response header<br><br>Setting to past date removes the cookie<br>                                                     | Attribute is ignored                       |
-| Max-Age          | Number of seconds until the cookie expires<br><br>Makes the cookie a permanent cookie<br><br>Has precedence over Expires if both are set<br><br>Setting to 0 or negative value removes the cookie | Attribute is ignored                       |
-| Domain           | Can be set to origin or parent domains<br><br>Only sent to the origin if omitted<br><br>Sent to issuing domain and all subdomains if set                                                          | Cookie is discarded                        |
-| Path             | Must start with /<br><br>Only sent if the value matches the prefix of the request url                                                                                                             | Attribute is ignored                       |
-| Secure           | Only set and sent through HTTPS                                                                                                                                                                   | Cookie is discarded if set over HTTP       |
-| HttpOnly         | Cookie is only scoped to HTTP requests<br><br>Cannot be accessed by browser API                                                                                                                   | Cookie is discarded if set by non-HTTP API |
+| `Expires`        | Makes the cookie a permanent cookie<br><br>Calculated with respect to Date response header<br><br>Setting to past date removes the cookie<br>                                                     | Attribute is ignored                       |
+| `Max-Age`        | Number of seconds until the cookie expires<br><br>Makes the cookie a permanent cookie<br><br>Has precedence over Expires if both are set<br><br>Setting to 0 or negative value removes the cookie | Attribute is ignored                       |
+| `Domain`         | Can be set to origin or parent domains<br><br>Only sent to the origin if omitted<br><br>Sent to issuing domain and all subdomains if set                                                          | Cookie is discarded                        |
+| `Path`           | Must start with /<br><br>Only sent if the value matches the prefix of the request url                                                                                                             | Attribute is ignored                       |
+| `Secure`         | Only set and sent through HTTPS                                                                                                                                                                   | Cookie is discarded if set over HTTP       |
+| `HttpOnly`       | Cookie is only scoped to HTTP requests<br><br>Cannot be accessed by browser API                                                                                                                   | Cookie is discarded if set by non-HTTP API |
 
 ## HTTP Headers
 
