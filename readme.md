@@ -1,5 +1,18 @@
 # HTTP Cookies
 
+Cookies can be either session or permanent cookies:
+
+1. **Session Cookies**
+
+    - If a cookie has neither the `Max-Age` nor the `Expires` attributes, then it is a session cookie.
+    - Session cookies are deleted when the current session ends.
+    - They are also known as _in-memory cookie_, _transient cookie_ or _non-persistent cookie_.
+
+2. **Permanent Cookies**
+
+    - If a cookie has either the `Max-Age` or `Expires` attributes, then it is a permanent cookie.
+    - Permanent cookies are deleted after the date specified in the `Expires` attribute or after the period specified in the `Max-Age`.
+
 ## Quick Overview
 
 | Cookie Attribute | Key Takeaways                                                                                                                                                                                     | If invalid                                 |
