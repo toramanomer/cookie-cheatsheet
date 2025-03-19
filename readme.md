@@ -1,6 +1,53 @@
 # HTTP Cookies
 
-## The `Domain` Attribute
+## Quick Overview
+
+| Cookie Attribute | Key Takeaways                                                                                                                                                                                     | If invalid                                 |
+| ---------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------ |
+| Expires          | Makes the cookie a permanent cookie<br><br>Calculated with respect to Date response header<br><br>Setting to past date removes the cookie<br>                                                     | Attribute is ignored                       |
+| Max-Age          | Number of seconds until the cookie expires<br><br>Makes the cookie a permanent cookie<br><br>Has precedence over Expires if both are set<br><br>Setting to 0 or negative value removes the cookie | Attribute is ignored                       |
+| Domain           | Can be set to origin or parent domains<br><br>Only sent to the origin if omitted<br><br>Sent to issuing domain and all subdomains if set                                                          | Cookie is discarded                        |
+| Path             | Must start with /<br><br>Only sent if the value matches the prefix of the request url                                                                                                             | Attribute is ignored                       |
+| Secure           | Only set and sent through HTTPS                                                                                                                                                                   | Cookie is discarded if set over HTTP       |
+| HttpOnly         | Cookie is only scoped to HTTP requests<br><br>Cannot be accessed by browser API                                                                                                                   | Cookie is discarded if set by non-HTTP API |
+
+## HTTP Headers
+
+### `Set-Cookie` Header
+
+-   The HTTP `Set-Cookie` is a **forbidden response header** that is used to send cookies. In other words, frontend JavaScript cannot access the header.
+-   Multiple cookies can be set using multiple `Set-Cooke` headers.
+-   Examples:
+    -   `Set-Cookie: sessionId=38afes7a8`
+    -   `Set-Cookie: id=a3fWa; Max-Age=2592000`
+    -   `Set-Cookie: num=123; Secure; Domain=example.com`
+
+### `Cookie` Header
+
+-   The HTTP `cookie` header is a **forbidden request header** that contains the stored HTTP cookies. In other words, the header cannot be set or modified programmatically in a request.
+-   The attributes of the cookies are **not** sent.
+-   Multiple cookies with the same name can be present. For example, `Cookie: myCookie=myValue; myCookie=another`.
+-   Examples:
+    -   `Cookie: cookieName=cookieValue`
+    -   `Cookie: theme=light; sid=123`
+
+## The Cookie Name
+
+-   It is required and case-sensitive. The cookie with name `foo` is different than a cookie with name `foO`.
+-   The server should not send more than one Set-Cookie header field in the same response with the exact same cookie name.
+
+## Cookie Attributes
+
+### The `Secure` Attribute
+
+The `Secure` attribute limits the scope of the cookie to secure channels. If the attribute is present, the cookie will be sent to the server only if the request is transmitted over TLS.
+
+-   It is an optional attribute, and defaults to not secure.
+-   It can only be set and will be only set through HTTPS
+-   It provides confidentiality, it does NOT provide integrity.
+-   Servers should encrypt and sign the contents of cookie even when sending the cookies over a secure channel.
+
+### The `Domain` Attribute
 
 The `Domain` attribute in the `Set-Cookie` response header specifies **which hosts the cookie will be sent to**.
 
@@ -9,8 +56,6 @@ If specified, cookies are available on the specified server and its subdomains, 
 A server can only set the Domain attribute to its own domain or a parent domain, not to a subdomain or some other domain.
 
 An invalid `Domain` attribute will cause the user agent (e.g., browser) to disregard the cookie altogether.
-
-### Key Points:
 
 -   **Optional Attribute:**
     -   It is an optional attribute. **If `Domain` is omitted**, the cookie is only available to the exact domain that set it.
@@ -41,9 +86,7 @@ An invalid `Domain` attribute will cause the user agent (e.g., browser) to disre
 
 -   **If `Domain` is set,** the cookie is available to the specified domain and all its subdomains.
 
----
-
-### Behavior of `Domain` Attribute
+**Behavior of `Domain` Attribute**
 
 | Attribute Value | Cookie was set by  | Cookie will be sent to           |
 | --------------- | ------------------ | -------------------------------- |
@@ -51,9 +94,7 @@ An invalid `Domain` attribute will cause the user agent (e.g., browser) to disre
 | `example.org`   | `example.org`      | `example.org` and all subdomains |
 | `example.org`   | `auth.example.org` | `example.org` and all subdomains |
 
----
-
-### Permitted vs. Not Permitted Values
+**Permitted vs. Not Permitted Values**
 
 | Request was sent to | **Permitted Values**                         | **Not Permitted Values**          |
 | ------------------- | -------------------------------------------- | --------------------------------- |
@@ -61,7 +102,7 @@ An invalid `Domain` attribute will cause the user agent (e.g., browser) to disre
 | `y.z.com`           | _(Omitted)_, `y.z.com`, `z.com`              | `other.com`, `com`                |
 | `x.y.z.com`         | _(Omitted)_, `x.y.z.com`, `y.z.com`, `z.com` | `other.com`, `v.x.y.z.com`, `com` |
 
-## The `Path` Attribute
+### The `Path` Attribute
 
 The `Path` attribute in the `Set-Cookie` response header specifies the set of paths that must exist for the browser to send the cookie.
 
