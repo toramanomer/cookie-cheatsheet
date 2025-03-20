@@ -1,3 +1,19 @@
+For personal use as a quick reference and notes on HTTP cookies.
+
+# Table of Contents
+
+1. [HTTP Cookies](#http-cookies)
+2. [Quick Overview](#quick-overview)
+3. [HTTP Headers](#http-headers)
+    - [`Set-Cookie` Header](#set-cookie-header)
+    - [`Cookie` Header](#cookie-header)
+4. [The Cookie Name](#the-cookie-name)
+    - [Name Prefix](#name-prefix)
+5. [Cookie Attributes](#cookie-attributes)
+    - [The `Secure` Attribute](#the-secure-attribute)
+    - [The `Domain` Attribute](#the-domain-attribute)
+    - [The `Path` Attribute](#the-path-attribute)
+
 # HTTP Cookies
 
 Cookies can be either session or permanent cookies:
@@ -13,6 +29,10 @@ Cookies can be either session or permanent cookies:
     - If a cookie has either the `Max-Age` or `Expires` attributes, then it is a permanent cookie.
     - Permanent cookies are deleted after the date specified in the `Expires` attribute or after the period specified in the `Max-Age`.
 
+The `Path` and `Domain` attributes must match the values used when the cookie was created when removing a cookie or changing the value of an existing cookie.
+
+The cookie can be be removed by sending a Set-Cookie header by setting the value of the `Expires` attribute to a date in the past or by setting the value of the `Max-Age` attribute to zero or negative number, given that the name, domain and path match.
+
 ## Quick Overview
 
 | Cookie Attribute | Key Takeaways                                                                                                                                                                                     | If invalid                                 |
@@ -24,12 +44,17 @@ Cookies can be either session or permanent cookies:
 | `Secure`         | Only set and sent through HTTPS                                                                                                                                                                   | Cookie is discarded if set over HTTP       |
 | `HttpOnly`       | Cookie is only scoped to HTTP requests<br><br>Cannot be accessed by browser API                                                                                                                   | Cookie is discarded if set by non-HTTP API |
 
+| Cookie Name Prefix | Cookie Attribute Requirements       |
+| ------------------ | ----------------------------------- |
+| `__Secure-`        | `Secure`                            |
+| `__Host-`          | `Secure`<br>`Path=/`<br>No `Domain` |
+
 ## HTTP Headers
 
 ### `Set-Cookie` Header
 
 -   The HTTP `Set-Cookie` is a **forbidden response header** that is used to send cookies. In other words, frontend JavaScript cannot access the header.
--   Multiple cookies can be set using multiple `Set-Cooke` headers.
+-   Multiple cookies can be set using multiple `Set-Cooke` headers. Multiple Set-Cookie header fields must not be combined into a single header field.
 -   Examples:
     -   `Set-Cookie: sessionId=38afes7a8`
     -   `Set-Cookie: id=a3fWa; Max-Age=2592000`
@@ -39,7 +64,7 @@ Cookies can be either session or permanent cookies:
 
 -   The HTTP `cookie` header is a **forbidden request header** that contains the stored HTTP cookies. In other words, the header cannot be set or modified programmatically in a request.
 -   The attributes of the cookies are **not** sent.
--   Multiple cookies with the same name can be present. For example, `Cookie: myCookie=myValue; myCookie=another`.
+-   Multiple cookies with the same name can be present. For example, `Cookie: myCookie=myValue; myCookie=another`. (Because they could have been set with different domain-path attribute combinations.)
 -   Examples:
     -   `Cookie: cookieName=cookieValue`
     -   `Cookie: theme=light; sid=123`
@@ -47,7 +72,21 @@ Cookies can be either session or permanent cookies:
 ## The Cookie Name
 
 -   It is required and case-sensitive. The cookie with name `foo` is different than a cookie with name `foO`.
+-   It must not be empty.
 -   The server should not send more than one Set-Cookie header field in the same response with the exact same cookie name.
+
+### Name Prefix
+
+As user agents do not send the cookies with attributes, it is impossible for a server to have confidence that a given cookie was set with a particular set of attributes.
+In order to provide such confidence, two cooke name prefixes are defined, both of which require case-sensitive match.
+
+1. `__Secure-`:
+
+    Ensures that the cookie was set with `Secure` attribute.
+
+2. `__Host-`:
+
+    Ensures that the cookie was set with `Secure` attribute, `Path` as `/` and no `Domain` attribute, which would mean that the cookie was set by the same domain, and not any subdomains!
 
 ## Cookie Attributes
 
